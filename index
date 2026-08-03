@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retail Strategy · Warm-Up Questions</title>
+<style>
+  :root{
+    --red:#9D2235;
+    --red-dark:#7A1A28;
+    --blossom:#F3D8DC;
+    --pale:#FCF4F5;
+    --charcoal:#1A1A1A;
+    --mid:#555555;
+    --light:#AAAAAA;
+    --rule:#D9BBBD;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#fff;color:var(--charcoal);
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  :focus-visible{outline:3px solid var(--red);outline-offset:3px}
+
+  .topbar{height:8px;background:var(--red);width:100%}
+  .eyebrow{
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--light);font-weight:bold;
+  }
+
+  /* ---------- menu ---------- */
+  #menu{min-height:100%;display:flex;flex-direction:column}
+  .menu-head{padding:38px 48px 22px;border-bottom:1px solid var(--rule)}
+  .menu-head h1{
+    font-size:34px;font-weight:bold;color:var(--red);letter-spacing:-.01em;margin-top:10px;
+  }
+  .menu-body{padding:22px 48px 60px;flex:1}
+  .act-label{
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--red);
+    font-weight:bold;margin:22px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--blossom);
+  }
+  .wk{
+    display:flex;align-items:center;gap:18px;
+    padding:13px 16px;border:1px solid var(--rule);border-left:5px solid var(--red);
+    margin-bottom:7px;background:#fff;
+  }
+  .wk:nth-child(even){background:var(--pale)}
+  .wk-num{
+    font-size:12px;font-weight:bold;color:var(--red);letter-spacing:.1em;
+    width:66px;flex:none;text-transform:uppercase
+  }
+  .wk-name{font-size:17px;font-weight:bold;flex:1}
+  .wk-btns{display:flex;gap:8px}
+  .daybtn{
+    font-size:13px;font-weight:bold;padding:9px 18px;border:1.5px solid var(--red);
+    color:var(--red);background:#fff;letter-spacing:.04em;transition:background .12s,color .12s;
+  }
+  .daybtn:hover{background:var(--red);color:#fff}
+  .daybtn[disabled]{
+    border-color:var(--rule);color:var(--light);cursor:default;background:transparent;
+  }
+  .daybtn[disabled]:hover{background:transparent;color:var(--light)}
+
+  /* ---------- quiz ---------- */
+  #quiz{display:none;min-height:100%;flex-direction:column}
+  #quiz.on{display:flex}
+  .q-head{
+    display:flex;align-items:center;gap:16px;
+    padding:16px 48px;border-bottom:1px solid var(--rule);
+  }
+  .q-head .who{font-size:12px;font-weight:bold;color:var(--red);letter-spacing:.14em;text-transform:uppercase}
+  .q-head .spacer{flex:1}
+  .pips{display:flex;gap:6px}
+  .pip{width:26px;height:5px;background:var(--blossom)}
+  .pip.done{background:var(--red-dark)}
+  .pip.now{background:var(--red)}
+  .exit{font-size:12px;color:var(--light);letter-spacing:.1em;text-transform:uppercase;font-weight:bold}
+  .exit:hover{color:var(--red)}
+
+  .q-body{
+    flex:1;display:flex;flex-direction:column;justify-content:center;
+    padding:34px 64px;max-width:1180px;margin:0 auto;width:100%;
+  }
+  .q-text{
+    font-size:clamp(24px,3.1vw,42px);font-weight:bold;line-height:1.24;
+    letter-spacing:-.015em;margin:14px 0 34px;
+  }
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{
+    display:flex;align-items:stretch;border:1px solid var(--rule);background:#fff;
+    transition:opacity .25s ease, background .25s ease, border-color .25s ease;
+  }
+  .opt .num{
+    width:58px;flex:none;background:var(--pale);color:var(--red);
+    font-size:22px;font-weight:bold;display:flex;align-items:center;justify-content:center;
+    border-right:1px solid var(--rule);transition:background .25s,color .25s;
+  }
+  .opt .txt{
+    padding:16px 20px;font-size:clamp(15px,1.55vw,21px);line-height:1.4;display:flex;align-items:center;
+  }
+  .opt .tick{
+    width:0;overflow:hidden;display:flex;align-items:center;justify-content:center;
+    font-size:22px;font-weight:bold;transition:width .25s;
+  }
+  .revealed .opt{opacity:.28}
+  .revealed .opt.right{
+    opacity:1;background:var(--red);border-color:var(--red);color:#fff;
+  }
+  .revealed .opt.right .num{background:var(--red-dark);color:#fff;border-right-color:var(--red-dark)}
+  .revealed .opt.right .tick{width:56px;color:#fff}
+
+  .cue{
+    margin-top:28px;font-size:15px;color:var(--red);font-weight:bold;
+    letter-spacing:.16em;text-transform:uppercase;
+  }
+  .revealed .cue{display:none}
+
+  .q-foot{
+    display:flex;align-items:center;gap:12px;padding:14px 48px;
+    border-top:1px solid var(--rule);background:var(--pale);
+  }
+  .nav{
+    font-size:13px;font-weight:bold;padding:10px 22px;border:1.5px solid var(--red);
+    color:var(--red);letter-spacing:.04em;
+  }
+  .nav:hover{background:var(--red);color:#fff}
+  .nav.solid{background:var(--red);color:#fff}
+  .nav.solid:hover{background:var(--red-dark);border-color:var(--red-dark)}
+  .keys{margin-left:auto;font-size:11px;color:var(--light);letter-spacing:.06em}
+  .keys kbd{
+    font-family:inherit;border:1px solid var(--rule);padding:2px 6px;margin:0 2px;color:var(--mid);
+  }
+
+  .end{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:var(--red);color:#fff;text-align:center;padding:40px;
+  }
+  .end h2{font-size:clamp(30px,4.4vw,60px);font-weight:bold;letter-spacing:-.02em}
+  .end p{margin-top:16px;font-size:17px;color:var(--blossom);font-style:italic}
+  .end .again{
+    margin-top:32px;border:1.5px solid #fff;color:#fff;padding:11px 26px;
+    font-size:13px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .end .again:hover{background:#fff;color:var(--red)}
+
+  /* ---------- prep view (instructor only) ---------- */
+  .preplink{
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:bold;
+    color:var(--light);
+  }
+  .preplink:hover{color:var(--red)}
+  #prep{display:none;min-height:100%;flex-direction:column}
+  #prep.on{display:flex}
+  .prep-head{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:26px 48px 18px;border-bottom:1px solid var(--rule);
+  }
+  .prep-head h2{font-size:24px;color:var(--red);letter-spacing:-.01em}
+  .prep-head .spacer{flex:1}
+  .chip{
+    font-size:11px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;
+    padding:7px 13px;border:1.5px solid var(--rule);color:var(--mid);
+  }
+  .chip:hover{border-color:var(--red);color:var(--red)}
+  .chip.on{background:var(--red);border-color:var(--red);color:#fff}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;padding:14px 48px 0}
+  .prep-body{padding:8px 48px 60px;max-width:900px}
+  .prep-set{margin-top:30px;page-break-inside:auto}
+  .prep-set h3{
+    font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#fff;
+    background:var(--red);padding:9px 14px;
+  }
+  .pq{border:1px solid var(--rule);border-top:none;padding:15px 16px;page-break-inside:avoid}
+  .pq:nth-child(even){background:var(--pale)}
+  .pq .pqn{font-size:11px;font-weight:bold;letter-spacing:.16em;color:var(--red);text-transform:uppercase}
+  .pq .pqt{font-size:15px;font-weight:bold;line-height:1.4;margin:5px 0 10px}
+  .pq ol{margin:0 0 0 20px;font-size:13.5px;line-height:1.65}
+  .pq li.key{font-weight:bold;color:var(--red)}
+  .pq li.key::after{content:"  \2713";font-weight:bold}
+  .pq .pnote{
+    margin-top:11px;padding:10px 12px;background:#fff;border-left:4px solid var(--red-dark);
+    font-size:12.5px;line-height:1.55;color:var(--mid);
+  }
+  .pq:nth-child(even) .pnote{background:var(--blossom)}
+  .pq .pnote b{color:var(--red-dark);letter-spacing:.14em;font-size:10px;text-transform:uppercase;display:block;margin-bottom:4px}
+  .prep-empty{margin-top:30px;font-size:14px;color:var(--mid);font-style:italic}
+
+  @media print{
+    .topbar,.prep-head,.chips,.preplink{display:none!important}
+    #menu,#quiz{display:none!important}
+    #prep{display:block!important}
+    .prep-body{padding:0;max-width:100%}
+    .prep-set h3{background:none;color:var(--red);border-bottom:2px solid var(--red);padding-left:0}
+    .pq,.pq:nth-child(even){background:none}
+    body{font-size:11pt}
+  }
+
+  @media (max-width:720px){
+    .menu-head,.menu-body,.q-head,.q-foot,.prep-head,.chips,.prep-body{padding-left:20px;padding-right:20px}
+    .q-body{padding:24px 20px}
+    .wk{flex-wrap:wrap;gap:10px}
+    .keys{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="topbar"></div>
+
+<!-- ============ MENU ============ -->
+<div id="menu">
+  <div class="menu-head" style="display:flex;align-items:flex-end;gap:16px">
+    <div style="flex:1">
+      <div class="eyebrow">MKTG 44303 &middot; Retail Strategy</div>
+      <h1>Warm-Up Questions</h1>
+    </div>
+    <button class="preplink" onclick="showPrep()">Prep view</button>
+  </div>
+  <div class="menu-body">
+    <div class="act-label">Act 1 &mdash; When Purpose Works</div>
+    <div id="act1"></div>
+    <div class="act-label">Act 2 &mdash; When Purpose Gets Complicated</div>
+    <div id="act2"></div>
+  </div>
+</div>
+
+<!-- ============ PREP VIEW (instructor only) ============ -->
+<div id="prep">
+  <div class="prep-head">
+    <h2>Prep view</h2>
+    <span style="font-size:12px;color:var(--mid);font-style:italic">Source order &mdash; the projector shuffles options</span>
+    <span class="spacer"></span>
+    <button class="chip" onclick="window.print()">Print</button>
+    <button class="chip" onclick="hidePrep()">Close</button>
+  </div>
+  <div class="chips" id="prepChips"></div>
+  <div class="prep-body" id="prepBody"></div>
+</div>
+
+<!-- ============ QUIZ ============ -->
+<div id="quiz">
+  <div class="q-head">
+    <span class="who" id="qWho"></span>
+    <span class="spacer"></span>
+    <div class="pips" id="qPips"></div>
+    <button class="exit" onclick="goMenu()">Close</button>
+  </div>
+  <div id="qStage"></div>
+  <div class="q-foot" id="qFoot">
+    <button class="nav" id="btnBack" onclick="prev()">&larr; Back</button>
+    <button class="nav solid" id="btnMain" onclick="advance()">Show answer</button>
+    <span class="keys">
+      <kbd>Space</kbd> reveal &middot; <kbd>&rarr;</kbd> next &middot; <kbd>&larr;</kbd> back &middot; <kbd>Esc</kbd> menu
+    </span>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   QUESTION DATA
+
+   One entry per week. `mon` and `wed` each hold 5 questions.
+   An empty array ( [] ) greys that day's button out.
+
+   Question shape:
+   { q:    "Question text",
+     opts: ["Option 1","Option 2","Option 3","Option 4"],
+     ans:  2,                      <-- 0 = first option, 1 = second, etc.
+     note: "Instructor note."       <-- optional; NEVER shown in class.
+   }                                    Appears only in Prep view.
+
+   The on-screen prompt students see before each reveal is set
+   in CUE_TEXT just below. Set it to "" to hide it entirely.
+   ============================================================ */
+
+const CUE_TEXT = "Lock in your answer";
+
+const WEEKS = [
+  { wk:2, act:1, name:"Patagonia",
+    mon:[
+      { q:"Patagonia transferred ownership in 2022. Who now holds decision-making authority over the company?",
+        opts:["A consortium of institutional investors and ESG funds", "The Patagonia Purpose Trust and the Holdfast Collective", "Yvon Chouinard's family trust, which retains voting control", "A publicly traded B Corporation listed on the NYSE"],
+        ans:1,
+        note:"Wrong answers are plausible - institutional ESG funds and family trusts are both common structures for mission-driven companies. The correct answer is the one structure that legally removes shareholder profit as the primary goal. If fewer than 60% get this right, pause and clarify: the Trust holds voting shares; Holdfast Collective holds economic shares and directs profits to environmental grants." },
+      { q:"Patagonia's Worn Wear program allows customers to do which of the following?",
+        opts:["Earn loyalty points redeemable for discounts on new Patagonia products", "Donate used clothing to Patagonia for tax deductions", "Buy, sell, and repair used Patagonia gear through the company's own platform", "Subscribe to a monthly box of curated secondhand outdoor gear from any brand"],
+        ans:2,
+        note:"Option 4 is a plausible distractor because recommerce subscriptions exist. The key distinction is that Worn Wear is brand-specific and company-operated - Patagonia runs the resale and repair platform themselves, making it a strategic moat rather than just participation in the resale market." },
+      { q:"Patagonia's Ironclad Guarantee means the company will:",
+        opts:["Guarantee that all products are made from 100% recycled or organic materials", "Repair or replace any Patagonia product for any reason, at any time", "Guarantee that the carbon footprint of every product is independently verified", "Offer a price-match guarantee against any competitor's product"],
+        ans:1,
+        note:"Option 1 is a plausible distractor - Patagonia does use sustainable materials extensively, but the Ironclad Guarantee is specifically about product longevity and repair. Reinforces the 4-pillar Customer Service discussion." },
+      { q:"What distinguishes a 'Purpose-Embedded' company from a 'Purpose-Pioneering' company in the Purpose Authenticity Framework?",
+        opts:["Purpose-Pioneering companies are larger and have more resources to invest in sustainability", "Purpose-Embedded companies have B Corp certification; Purpose-Pioneering companies do not", "Purpose-Pioneering companies have legally structured their organization so purpose cannot be overridden by profit motive - going beyond voluntary commitments", "Purpose-Embedded companies operate only in niche markets; Purpose-Pioneering companies compete in mass markets"],
+        ans:2,
+        note:"This is the hardest Monday question and most important for Wednesday prep. The Embedded/Pioneering distinction is structural/legal, not just behavioral. Option 2 is a trap - B Corp is consistent with Purpose-Embedded, but Purpose-Pioneering requires going further with irreversible structural commitment. Worth 30 seconds of discussion if time allows." },
+      { q:"Which BEST describes the strategic logic behind Patagonia's store location choices?",
+        opts:["Patagonia locations are chosen to maximize foot traffic through proximity to high-volume shopping malls and tourist destinations", "Patagonia places stores in outdoor recreation communities and eco-conscious urban markets, deliberately avoiding mass retail contexts", "Patagonia's store locations are determined primarily by franchise partner preferences and local real estate availability", "Patagonia has no physical retail strategy - the company operates exclusively direct-to-consumer online"],
+        ans:1,
+        note:"Option 4 is a strong distractor for students who didn't do the prep (many premium DTC brands are online-only). The correct answer reinforces that Patagonia's location strategy is a brand signal - being in Moab or Burlington rather than a mall communicates authenticity to the outdoor community." }
+    ],
+    wed:[
+      { q:"Which specific action MOST clearly places Patagonia at 'Purpose-Pioneering' rather than 'Purpose-Embedded'?",
+        opts:["Patagonia's use of recycled and organic materials across its product line", "Patagonia's B Corp certification and Fair Trade supplier commitments", "The 2022 transfer of ownership to the Patagonia Purpose Trust, legally embedding the environmental mission in governance", "Patagonia's 1% for the Planet commitment, donating 1% of sales to environmental nonprofits"],
+        ans:2,
+        note:"Options 1, 2, and 4 are all legitimate purpose-aligned actions - but they are reversible. A future CEO could end any of them. The Trust structure is legally designed to be irreversible. This irreversibility is what defines Purpose-Pioneering. Confusion is usually between 'doing good things' and 'structurally committing to doing good things.'" },
+      { q:"One of the most credible environmental criticisms of Patagonia's core business is that:",
+        opts:["Patagonia's supply chain has never been audited by a third party, making its sustainability claims unverifiable", "Patagonia's primary products (synthetic fleece, nylon shells) shed microplastics into waterways with every wash", "Patagonia has lobbied against US climate legislation that would affect its manufacturing costs", "Patagonia's Worn Wear program actually increases total consumption by making secondhand gear more accessible and affordable"],
+        ans:1,
+        note:"Comes directly from Source 7 (the critical counterpoint). Students who only read company-authored materials will likely miss this. This question rewards engagement with the critical source - essential for Act 2 of the course, which requires holding positive and negative evidence simultaneously. Option 4 (the 'rebound effect') is a real phenomenon but less specific and documented than microplastics." },
+      { q:"Patagonia's 2022 ownership transfer benefited some stakeholders and imposed costs on others. Which stakeholder group bears the clearest COST from this decision?",
+        opts:["Customers, who now pay higher prices because profits no longer fund product innovation", "The natural environment, because the Trust limits how aggressively Patagonia can reinvest in new sustainable technologies", "Traditional shareholders and outside investors, who no longer have a path to financial returns from Patagonia's growth", "Employees, who lost equity participation opportunities as a result of the Trust structure"],
+        ans:2,
+        note:"DISCUSSION QUESTION - intentionally open to interpretation; consider opening for class discussion. Option 3 is most defensible because the Trust explicitly removed external investment returns. Option 4 is a legitimate partial answer. Worth surfacing the nuance: 'cost' and 'benefit' depend entirely on which stakeholder lens you use." },
+      { q:"In stakeholder mapping, a stakeholder with HIGH POWER and HIGH INTEREST in a company's decisions should be:",
+        opts:["Monitored periodically but not actively engaged unless a crisis arises", "Kept informed through regular communications but not involved in decision-making", "Managed closely - engaged proactively, included in key decisions, treated as a primary audience for strategic choices", "Kept satisfied with occasional gestures but not given structural influence over company direction"],
+        ans:2,
+        note:"The four quadrants map to four responses: Monitor (low/low), Keep Informed (low/high), Keep Satisfied (high/low), and Manage Closely (high/high). Students often confuse 'Keep Satisfied' and 'Manage Closely' - the distinction is whether the stakeholder is actively consulted in decisions or just appeased after the fact." },
+      { q:"Patagonia's 'Don't Buy This Jacket' advertising campaign is strategically significant primarily because it:",
+        opts:["Successfully reduced Patagonia's total unit sales, demonstrating genuine environmental commitment", "Used anti-consumerism messaging to build brand trust and awareness, which ultimately drove higher brand equity and customer loyalty - potentially increasing long-term revenue", "Was required under Patagonia's B Corp certification to disclose the environmental impact of each purchase", "Targeted competitor customers who were considering switching to less sustainable brands"],
+        ans:1,
+        note:"Option 1 is the naive reading - the campaign did NOT reduce sales; it boosted brand equity significantly. The correct answer captures the strategic genius: using anti-marketing as the most effective form of marketing for purpose-aligned consumers. This is the 'permission paradox' of purpose-driven retail. If time allows: 'If Patagonia launches home goods and runs a similar campaign, does it work the same way? Why or why not?' - primes Friday perfectly." }
+    ]
+  },
+  { wk:3, act:1, name:"ABLE",
+    mon:[
+      { q:"ABLE describes itself as which of the following?",
+        opts:["A sustainable fashion brand focused on reducing carbon emissions", "A justice organization that happens to be in the fashion industry", "A luxury accessories brand committed to ethical sourcing", "A Nashville lifestyle company inspired by Southern craftsmanship"],
+        ans:1,
+        note:"This quote from Barrett Ward (Source 3) is the case's central framing. Wrong answers 3 and 4 are plausible from surface-level brand knowledge; 1 is the kind of thing students who skimmed the intro paragraph might guess. The correct answer signals that students engaged with the primary interview source. Open for brief discussion: Why does the word 'justice' matter here instead of 'sustainability' or 'ethical'?" },
+      { q:"ABLE is legally structured as which of the following?",
+        opts:["A nonprofit organization funded by donor contributions", "A publicly traded company on the NYSE", "A benefit corporation and certified B Corp", "A cooperative owned by its manufacturing workers"],
+        ans:2,
+        note:"Option 1 is plausible because ABLE started as a nonprofit. Option 4 is an interesting distractor because it describes what ABLE values (worker ownership) without being accurate. The benefit corporation / B Corp answer rewards students who read past the origin story to understand how the company is actually structured today." },
+      { q:"What does ABLE publish that no other fashion brand had done before it?",
+        opts:["Its full carbon footprint for every product sold", "The names of every manufacturing factory in its supply chain", "The lowest wages paid at every manufacturing partner", "Its full profit margin breakdown for each product"],
+        ans:2,
+        note:"Option 1 is carbon footprint labeling - a practice associated with Patagonia's broader environmental transparency work and other purpose-driven brands - a useful distractor that rewards students who understand the diversity of transparency approaches across the course. Options 2 and 4 are things brands are sometimes pressured to do but few accomplish. The correct answer is the signature move that distinguishes ABLE's transparency model and anchors the ESG Materiality discussion." },
+      { q:"The Triple Bottom Line framework holds that business performance should be measured across which three dimensions?",
+        opts:["Revenue, Market Share, and Customer Satisfaction", "People, Planet, and Profit", "Ethics, Efficiency, and Excellence", "Social Impact, Environmental Impact, and Financial Return"],
+        ans:1,
+        note:"Option 4 is technically defensible and worth briefly addressing - it's a restatement of TBL in different vocabulary. The point of the correct answer is the memorable shorthand (People, Planet, Profit) that students will use as an analytical shorthand all semester." },
+      { q:"ABLE names its products after the women who make them. Which retail pillar does this practice most directly serve?",
+        opts:["Store Location - bringing the manufacturing context to the point of sale", "Merchandise - communicating quality through artisan provenance", "Atmospherics - creating an emotional and narrative brand environment", "Customer Service - making the purchase process more personal"],
+        ans:2,
+        note:"Options 2 and 4 are defensible and worth discussion - the question is designed to probe understanding of Atmospherics as more than physical store design. In an online-first DTC brand, atmospherics live in the product page, the photography, the naming convention. Open for discussion after revealing the answer." }
+    ],
+    wed:[
+      { q:"ABLE's ACCOUNTABLE platform is best described as which of the following?",
+        opts:["A consumer-facing app for tracking a product's environmental impact", "A proprietary social impact audit assessing manufacturing partners on wages, women's equality, and workplace safety", "A B Corp certification scoring system for ethical fashion brands", "A supply chain blockchain tracking raw material sourcing"],
+        ans:1,
+        note:"Option 3 is a plausible distractor for students who conflated ACCOUNTABLE with B Corp. Options 1 and 4 describe tools that exist in the industry but are not ACCOUNTABLE. The correct answer rewards students who engaged with Source 2 and Source 3 beyond the headline wage transparency story." },
+      { q:"Misti Blasko was brought in as ABLE's first female CEO in 2024 with what specific mandate?",
+        opts:["To restore the brand's B Corp certification after a failed audit", "To take ABLE from a $15 million brand to a mainstream fashion company", "To open 25 new retail locations across the Southern United States", "To pivot the brand from DTC to a wholesale-first distribution model"],
+        ans:1,
+        note:"Option 3 is a red herring from Blasko's AllSaints history (she grew AllSaints from 25 to 85 stores) - rewards students who read carefully and didn't confuse the source of her experience with her mandate at ABLE. Option 4 is Friday case territory - whether to pursue wholesale is undecided, not already the mandate. The correct answer sets up the entire Friday case frame." },
+      { q:"According to the ILO (International Labour Organization), what percentage of global garment workers earn a living wage?",
+        opts:["Less than 2%", "Approximately 15%", "About 35%", "More than half"],
+        ans:0,
+        note:"This statistic is in multiple sources (Sources 1, 7) and is the empirical foundation for ABLE's TBL argument. The number is intentionally shocking - less than 2% is lower than most students expect. Let the number land before moving on. Follow-up: If 80% of fashion workers are women and less than 2% earn a living wage, what does TBL say a fashion brand owes its People stakeholder?" },
+      { q:"ABLE's wage transparency and ACCOUNTABLE audit program would be classified in which ESG Materiality quadrant?",
+        opts:["Monitor - stakeholders care, but business impact is low", "Manage - high business impact, but stakeholders aren't watching closely", "Low Priority - neither stakeholders nor operations are significantly affected", "Material - high stakeholder significance AND high business impact"],
+        ans:3,
+        note:"The answer is the point - wage transparency is not a nice-to-have for ABLE, it is the brand's core competitive differentiation AND a direct driver of customer trust and operational standards. Students who answer 1 have understood that stakeholders care but missed that business impact is high. Worth discussing: What would it take for this to fall to Monitor? What would change?" },
+      { q:"Gen Z consumers are most likely to discover a brand like ABLE through which channel?",
+        opts:["The brand's DTC website and email newsletter", "In-store discovery at boutique wholesale partners", "TikTok short-form video content and Instagram Shop", "Long-form podcast sponsorships and editorial press coverage"],
+        ans:2,
+        note:"Options 1 and 2 describe ABLE's current channels - which is exactly the problem. Option 4 describes millennial discovery behavior more accurately than Gen Z's. The correct answer frames Friday's case scenario: ABLE is currently invisible to the demographic it needs to reach, and closing that gap requires a channel architecture it doesn't currently have. Open for discussion: What does a brand like ABLE need to look like on TikTok? Can radical transparency be told in 30 seconds?" }
+    ]
+  },
+  { wk:5, act:1, name:"Ozark Natural Foods",
+    mon:[
+      { q:"ONF describes itself as which of the following?",
+        opts:["A franchise of National Co+op Grocers, operating under a national brand license", "A locally owned consumer cooperative dedicated to healthful living and sustainability", "A nonprofit grocery store whose profits are donated to NWA food banks", "A worker-owned cooperative in which employees hold all decision-making authority"],
+        ans:1,
+        note:"Option 3 is a plausible distractor - co-ops and nonprofits are easily confused. Option 4 is a real co-op type (worker co-op) but not ONF's structure. The correct answer comes directly from ONF's mission statement (Source 1). If fewer than 70% answer correctly, spend 30 seconds on the distinction: consumer co-op (owned by shoppers/members) vs. worker co-op (owned by employees) vs. nonprofit (no member ownership). This distinction drives everything in Week 5." },
+      { q:"A customer who becomes an ONF member purchases $140 in equity. What voting rights does this create?",
+        opts:["Voting rights proportional to equity purchased - larger stakes get more votes", "One vote per household, exercised at annual elections for the Board of Directors", "Advisory input only - full voting rights require 5+ years of membership", "No formal voting rights - the board sets strategic direction without member votes"],
+        ans:1,
+        note:"Option 1 is the classic shareholder model distractor - students often assume more money equals more votes. The co-op model's fundamental difference is one-member-one-vote regardless of equity size. This is ICA Principle 2 (Democratic Member Control) made concrete. The correct answer is technically precise - households vote as a unit, not per individual within a household. Worth clarifying if it prompts questions." },
+      { q:"Which of the following is a benefit available ONLY to ONF members, not to regular shoppers?",
+        opts:["Access to ONF's organic produce section and bulk food department", "Eligibility to run for the Board of Directors and vote in annual elections", "The ability to shop at ONF's downtown Fayetteville location", "Access to ONF's A la Carte deli and house-made cold-pressed juices"],
+        ans:1,
+        note:"Options 1, 3, and 4 are available to any shopper - non-members can buy organic produce, visit the store, and eat at the deli. Only governance participation (board candidacy, voting) is member-exclusive. This reinforces ICA Principle 2 as a structural benefit. Also surfaces the student-relevant discount (U of A students get 5% off certain days) - worth mentioning after the warm-up as a personally relevant example." },
+      { q:"ICA Principle 4 - Autonomy and Independence - means that a co-op must:",
+        opts:["Operate independently of all government and bank relationships to avoid outside influence", "Ensure that any agreements with outside parties (including lenders) do not compromise the members' democratic control", "Generate all capital internally from member equity, never accepting outside financing", "Prohibit partnerships with non-cooperative businesses to protect its governance model"],
+        ans:1,
+        note:"Option 1 is a common misreading - Principle 4 doesn't prohibit all external relationships, it requires that such relationships don't undermine democratic control. Option 3 is too extreme - co-ops can and do take loans; the question is whether loan conditions compromise governance. This principle becomes directly relevant in Friday's case (the expansion capital question). Students who understand Principle 4 correctly will produce much stronger Friday recommendations." },
+      { q:"ONF evaluates every product it sells against its own quality standards. Which ingredient or attribute does ONF's standard explicitly exclude?",
+        opts:["Products grown outside of Washington County, Arkansas", "Products containing artificial preservatives, artificial colors, artificial flavors, artificial sweeteners, chemical additives, or added MSG", "Products priced above a threshold that makes them inaccessible to low-income shoppers", "Products manufactured by publicly traded corporations with no B Corp certification"],
+        ans:1,
+        note:"The correct answer comes directly from ONF's stated quality standards (Source 1). Options 1 and 4 are plausible distractors - students may assume a co-op excludes non-local products entirely (it doesn't) or evaluates corporate ownership (it evaluates products individually). This reinforces the Merchandise pillar from Monday's 4-pillar retail analysis and connects to the Values-Based Supply Chain framework." }
+    ],
+    wed:[]
+  },
+  { wk:6, act:1, name:"thredUP",
+    mon:[
+      { q:"Which of the following best captures thredUP's stated mission?",
+        opts:["To offer the largest selection of discounted brand-name clothing online", "To inspire a new generation of consumers to think secondhand first", "To make luxury fashion accessible to everyday shoppers", "To partner with brands to reduce their overproduction"],
+        ans:1,
+        note:"Tests careful reading of the primary source (Impact page / Resale Report foreword). Wrong answers 1, 3, and 4 are plausible - all describe things thredUP does or could claim - but the correct answer is the exact mission language. Students who only skimmed the overview may guess 1 or 3." },
+      { q:"thredUP's model is called a 'managed marketplace.' What makes it different from a peer-to-peer platform like Poshmark or Depop?",
+        opts:["thredUP allows sellers to set their own prices", "thredUP only sells luxury and premium brands", "thredUP handles authentication, pricing, photography, and fulfillment on behalf of sellers", "thredUP connects buyers and sellers directly without taking a commission"],
+        ans:2,
+        note:"Tests understanding of the structural difference between managed and peer-to-peer resale - a concept central to Monday's competitive positioning map. Option 1 is the opposite of reality (thredUP sets prices algorithmically). Option 4 is pure P2P. Good discussion opener: What does thredUP's managed model enable that P2P can't do at scale?" },
+      { q:"When a seller sends a Clean Out Kit to thredUP, what happens to garments that don't meet thredUP's quality standards?",
+        opts:["They are returned to the seller at no charge", "They are donated to local thrift stores", "They are routed to aftermarket recycling partners or, in some cases, landfilled", "They are listed on thredUP's platform at a discounted price"],
+        ans:2,
+        note:"Tests engagement with the business model's less-publicized reality - a key critical detail for evaluating thredUP's full environmental impact. Students who only read the marketing materials will guess 1 or 4. The correct answer surfaces the fact that not all submitted items circulate, which is central to evaluating the Friday scenario." },
+      { q:"Which of the following best defines 'recommerce' as used in this week's case?",
+        opts:["A marketing strategy that emphasizes sustainability to attract younger consumers", "The commercial resale of previously-owned goods through organized platforms and infrastructure", "A regulatory framework requiring brands to take back used garments", "The practice of renting clothing instead of purchasing it"],
+        ans:1,
+        note:"Tests whether students understand recommerce as a concept (not a framework, not a policy, not rental). Option 1 reduces recommerce to marketing strategy - a common conflation. Option 4 confuses resale with rental. Important to establish this vocabulary cleanly before Friday. If many students choose 1, it's worth a quick clarification: recommerce isn't a marketing tactic, it's a business model category." },
+      { q:"thredUP's digital interface is designed to feel like a new-retail shopping experience rather than a traditional thrift store. Which strategic goal does this design choice primarily serve?",
+        opts:["Reducing the cost of product photography and listing", "Removing the stigma and friction associated with buying secondhand", "Complying with federal regulations on online resale platforms", "Differentiating thredUP from luxury resale platforms like The RealReal"],
+        ans:1,
+        note:"Tests the 4-pillar retail deep dive (atmospherics row). Option 4 is directionally plausible but backwards - thredUP's UX differentiates it from traditional thrift, not from luxury resale. Option 1 is the opposite of the intent (the UX investment increases photography/listing costs). Good discussion anchor: What happens to thredUP's customer base if it feels like Goodwill's website?" }
+    ],
+    wed:[
+      { q:"thredUP's core marketplace most directly advances which of the three Circular Economy principles?",
+        opts:["Design out waste and pollution", "Regenerate natural systems", "Keep products and materials in use", "Eliminate single-use materials"],
+        ans:2,
+        note:"Tests core framework comprehension after Monday. Option 1 (Design out waste) is the production-side principle - thredUP can't control garment design. Option 2 (Regenerate) is about restoring natural capital - beyond thredUP's scope. Option 4 is not one of the three official EMF principles - a deliberate distractor for students who paraphrased instead of learning the framework. Should be solid if students did Wednesday prep Q5." },
+      { q:"The Ellen MacArthur Foundation report notes that resale models 'do not always benefit the environment.' Which scenario best explains when recommerce FAILS to generate net environmental benefit?",
+        opts:["When the resale platform charges sellers a commission on items sold", "When a buyer purchases a secondhand item IN ADDITION TO new items rather than as a replacement", "When garments are shipped to buyers using air freight instead of ground shipping", "When the resale platform operates distribution centers in multiple states"],
+        ans:1,
+        note:"Tests the rebound effect / displacement condition - the most important analytical caveat in the Circular Economy / PLA framework. Option 3 (air freight) is a real issue but a minor one compared to the displacement failure. Options 1 and 4 are operational details with no environmental logic attached. Maps directly to Wednesday's Shock 1 discussion. Strong discussion prompt: So recommerce's environmental benefit isn't guaranteed - what would have to be true for the 82% carbon reduction claim to hold?" },
+      { q:"According to Product Lifecycle Analysis, at which stage of a garment's lifecycle does recommerce intervene most directly?",
+        opts:["Raw material extraction", "Production and manufacturing", "Use phase", "End-of-life recycling"],
+        ans:2,
+        note:"DISCUSSION QUESTION. Tests PLA framework comprehension - specifically that students can place thredUP's intervention at the correct lifecycle stage. Options 1 and 2 are upstream production stages thredUP cannot affect. Option 4 is adjacent but downstream of recommerce's primary effect - thredUP extends use, not fiber recovery. Open for class discussion: If thredUP wanted to intervene at end-of-life, what would its business model look like? (Leads toward fiber recycling / upcycling territory.)" },
+      { q:"thredUP's Resale-as-a-Service (RaaS) platform now has 60+ brand clients. Which of the following best describes the core strategic tension this creates for thredUP's mission?",
+        opts:["RaaS reduces thredUP's gross margin because brand partners negotiate lower commission rates", "RaaS requires thredUP to build separate processing infrastructure for each brand partner", "RaaS means thredUP's circular economy infrastructure can serve brands that have not addressed overproduction - potentially enabling greenwashing", "RaaS forces thredUP to compete directly with its brand partners' own resale programs"],
+        ans:2,
+        note:"Tests the strategic tension identified in Wednesday's framework application - connecting the greenwashing critique (Source 7) to the RaaS business model. Option 1 is financially plausible but not the mission tension. Option 2 is an operational detail, not a values conflict. Option 4 describes a competitive tension, not a mission tension. Should be reachable for students who completed Wednesday Q7 prep and engaged with the Notebook moment." },
+      { q:"thredUP's 2025 shift toward premium inventory and higher price points serves which marketing objective - but at what cost?",
+        opts:["Attracts affluent buyers who spend more per order, but risks repositioning thredUP as a luxury platform rather than a mainstream circular economy solution", "Increases thredUP's unit margins, but requires building separate luxury authentication infrastructure", "Strengthens thredUP's sustainability credentials by focusing on higher-quality garments, with no significant downside", "Reduces thredUP's reliance on seller supply, but increases dependence on brand RaaS partnerships"],
+        ans:0,
+        note:"Tests the premium pivot strategy shock from Wednesday and connects it to brand positioning strategy - the marketing tradeoff framing. Option 2 is an operational detail. Option 3 presents the premium pivot as unambiguous good - students who engage critically will recognize the accessibility/mission tension. Option 4 mischaracterizes the relationship between premium inventory and RaaS. The correct answer captures both the commercial logic and the positioning risk." }
+    ]
+  },
+  { wk:7, act:1, name:"Warby Parker",
+    mon:[
+      { q:"Warby Parker was founded after one co-founder lost his glasses and couldn't afford to replace them. What structural industry problem made glasses so expensive?",
+        opts:["Import tariffs on optical components made lenses prohibitively expensive", "A single company (EssilorLuxottica) controlled the majority of the global eyewear market, eliminating price competition", "Prescription glasses require expensive FDA regulatory approval processes", "Retail opticians charge high markups to cover the cost of providing eye exams"],
+        ans:1,
+        note:"Industry monopoly is the structural problem Warby Parker's DTC model directly addresses. Option 4 is a plausible distractor because optician markups are real, but the root cause is Luxottica's market control. Open for brief discussion if time allows." },
+      { q:"Warby Parker's starting price of $95 for prescription glasses (including lenses) is possible primarily because of which business model decision?",
+        opts:["They use lower-quality lens materials to reduce manufacturing cost", "They source glasses from manufacturers in developing countries where labor is cheapest", "They design eyewear in-house and sell directly to consumers, eliminating retailer and licensing markups", "They partner with insurance companies who subsidize the retail price"],
+        ans:2,
+        note:"The DTC model is the structural innovation. Option 1 is a common misconception (Warby Parker emphasizes quality). Option 4 describes a real revenue stream but not the reason for low prices." },
+      { q:"When Warby Parker says 'Buy a Pair, Give a Pair,' what actually happens with the donated glasses?",
+        opts:["A physical pair of Warby Parker glasses is shipped directly to a recipient in a developing country", "Warby Parker donates funds and glasses to VisionSpring, which trains local entrepreneurs to sell glasses at affordable prices", "The donated pair goes to Warby Parker's Pupils Project, which distributes to U.S. schoolchildren only", "Customers choose a specific recipient from an online registry to receive their donated pair"],
+        ans:1,
+        note:"Important: the VisionSpring model is specifically designed to avoid the dependency critique of direct product donation (like TOMS). Students who read Source 2 will get this; students who only skimmed the website headline will pick option 1." },
+      { q:"Porter and Kramer's Shared Value Framework argues that businesses should:",
+        opts:["Donate a share of profits to social causes to offset the negative effects of commercial activity", "Prioritize shareholder returns in the short term so they can afford social investment in the long term", "Create economic value in a way that also creates value for society - so that profit and social impact reinforce each other", "Transfer business decision-making authority to a nonprofit board to ensure mission accountability"],
+        ans:2,
+        note:"Option 1 describes philanthropy (not Shared Value). Option 4 is closer to co-op governance. This question tests whether students understand Shared Value as a structural argument, not a CSR argument." },
+      { q:"Warby Parker's library-themed, book-lined stores with non-uniform staff are designed primarily to:",
+        opts:["Make the retail experience feel exclusive and high-end to justify premium pricing", "Differentiate from the clinical aesthetic of traditional optical retailers and reinforce the brand's design-forward, accessible identity", "Reduce store construction costs by using existing bookshelves and fixtures", "Signal to customers that Warby Parker is a cultural institution rather than a commercial retailer"],
+        ans:1,
+        note:"Atmospherics are strategic, not decorative. Option 4 is too abstract; the real answer is competitive differentiation from LensCrafters-style clinical environments. This connects the 4 Pillars table." }
+    ],
+    wed:[
+      { q:"Warby Parker Inc. donates cash and stock to the Warby Parker Impact Foundation, a separate 501(c)(3) nonprofit. What is the primary strategic reason for keeping these as separate legal entities rather than running all philanthropic activities through the company?",
+        opts:["Tax efficiency - the Foundation structure allows Warby Parker to deduct donations at a higher rate than internal spending", "Mission protection - a legally independent Foundation cannot be directed by shareholder interests, making philanthropic commitments more durable across commercial pressure", "Marketing credibility - customers trust a named foundation more than corporate philanthropy programs", "Regulatory compliance - the SEC requires public companies to separate social programs into independent nonprofits"],
+        ans:1,
+        note:"The conceptual payoff of Wednesday's Segment 3B discussion. Option 1 is a real benefit but not the primary strategic reason. Option 3 is a secondary marketing benefit, not the structural rationale. Option 4 is false. Students who engaged with Source 4 and thought carefully about Wednesday prep Q1 will get this. If most students pick option 3, use it as a teaching moment: transparency and trust are marketing benefits of the structure, but mission durability is the strategic reason." },
+      { q:"What is the most serious structural criticism of buy-one-give-one models raised by academic researchers (including the Wharton analysis)?",
+        opts:["BOGO programs are too expensive to administer and reduce company profitability below viable levels", "Consumers don't actually trust BOGO claims and are more motivated by price discounts", "Product donations without addressing root causes (such as lack of trained optometrists) may create dependency or go unused", "BOGO models are primarily used by companies with poor product quality who need a social story to justify premium pricing"],
+        ans:2,
+        note:"The Wharton article's core argument. Students who read Source 6 carefully will identify this as the structural critique that the Friday case scenario is built around. Option 4 is a cynical distractor; options 1 and 2 are real concerns but not the structural critique." },
+      { q:"Warby Parker went public in 2021 (NYSE: WRBY) and now reports to shareholders who expect profitability growth. On the Social Enterprise Spectrum, this pressure most likely pushes the company toward which shift?",
+        opts:["From Traditional For-Profit toward Socially Responsible Business - shareholders are demanding more social programs", "From Social Enterprise toward Socially Responsible Business - mission is real but commercial pressure subordinates it to profit", "From Hybrid Nonprofit toward Social Enterprise - going public gives them more capital to pursue the mission", "No shift - B Corp certification legally prevents shareholder primacy"],
+        ans:1,
+        note:"DISCUSSION QUESTION - designed to provoke debate. Students who read Source 7 (Seeking Alpha, AI pivot) and thought carefully about Wednesday prep Q3 will pick this. Option 4 is the most dangerous distractor: B Corp certification does NOT prevent shareholder primacy; it is a certification standard, not a legal constraint. Open this for class discussion." },
+      { q:"What is the structural difference between a public benefit corporation and a Certified B Corporation?",
+        opts:["Public benefit corporation is the nonprofit arm; Certified B Corporation is the for-profit company", "Public benefit corporation is a legal structure embedded in governing documents; B Corp certification is a third-party verification standard awarded by B Lab", "They are synonymous - B Lab is the government agency that charters public benefit corporations", "Public benefit corporation status requires B Corp certification; you cannot have one without the other"],
+        ans:1,
+        note:"A vocabulary question that rewards careful reading of Source 8 (framework handout) and Source 4 (Warby Parker Foundation). This distinction matters for the Friday case - the Impact Foundation is neither a public benefit corp nor a B Corp; it is a separate 501(c)(3)." },
+      { q:"The American Marketing Association's definition of marketing includes creating value for customers, clients, partners, AND society at large. This expansion of who marketing serves is most aligned with which concept?",
+        opts:["Purpose-Washing - companies claim social values they don't actually practice", "Triple Bottom Line - measuring profit, people, and planet separately", "Shared Value Framework - creating economic value in ways that simultaneously create social value", "B Corp Certification - requiring companies to meet a minimum social impact threshold"],
+        ans:2,
+        note:"Makes the explicit marketing connection students need for exam questions. The AMA definition update and Shared Value are conceptual allies - marketing is not just about customer transactions but about value creation for a wider stakeholder system. This is a medium-difficulty question; most students should get it after Wednesday's framework application." }
+    ]
+  },
+  { wk:9, act:2, name:"Whole Foods",
+    mon:[
+      { q:"According to Whole Foods' Declaration of Interdependence, which of the following is NOT listed as one of the company's five core stakeholder groups?",
+        opts:["Customers", "Team Members", "Amazon shareholders", "Community and Environment"],
+        ans:2,
+        note:"The Declaration names customers, team members, investors, suppliers, and community/environment - but 'investors' in the original document refers to Whole Foods' own investors, not Amazon as a parent company. Amazon shareholders represent exactly the stakeholder group whose priorities were not originally in the compact. This distinction is worth making explicit after the warm-up - it sets up the whole week's analytical frame." },
+      { q:"When Amazon acquired Whole Foods in 2017, what was the purchase price - and what did it signal to the grocery industry?",
+        opts:["$4.2 billion - a modest bet on physical retail", "$13.7 billion - Amazon's largest acquisition ever, sending shock waves through grocery stocks", "$13.7 billion - Amazon's second acquisition, after MGM", "$8.9 billion - a strategic pivot away from AWS"],
+        ans:1,
+        fixed:true,
+        note:"The $13.7B figure is widely cited and students who did the reading will know it. Two options carry the same dollar figure on purpose, so the discrimination is on the second half of the statement. The interesting follow-up: Walmart and Kroger stock dropped 5-9% on the day of the announcement, and Costco dropped 17%. Ask: what did the market think Amazon was really buying?" },
+      { q:"Which of the following is the most accurate description of how Whole Foods' purchasing strategy changed after the Amazon acquisition?",
+        opts:["Whole Foods expanded local purchasing in all regions to maintain brand differentiation", "Purchasing was fully decentralized to store managers to improve customer responsiveness", "Centralized purchasing at Austin HQ shifted power toward large national CPG brands, reducing local vendor access", "Amazon eliminated the 365 private label to focus exclusively on premium national brands"],
+        ans:2,
+        note:"The centralization point is the most operationally significant change most students will not have noticed as shoppers. Connect it to the Fayetteville context: think about the local Arkansas products on that shelf - where do those buying decisions get made now?" },
+      { q:"In the M&A Integration Spectrum, which integration level describes a company where the acquired brand's identity is preserved externally for customers, but internal operations and culture have been progressively replaced by the acquirer's systems?",
+        opts:["Preservation", "Symbiosis", "Absorption", "Transformation"],
+        ans:2,
+        fixed:true,
+        note:"Definitional, but also a diagnostic - students who understand Absorption will immediately recognize Whole Foods in 2025. If students confuse Absorption with Transformation, clarify: Transformation replaces the brand identity externally too. Absorption is the hollow shell problem - the packaging says Whole Foods but the insides say Amazon." },
+      { q:"What is the strategic significance of Whole Foods' new small-format 'Daily Shop' stores (7,000-14,000 sq ft, launched in Manhattan in 2024)?",
+        opts:["They replace full-format stores, reducing Whole Foods' real estate costs", "They test whether the Whole Foods brand can travel to higher-frequency convenience trips without diluting the premium identity", "They are designed exclusively as fulfillment hubs for Amazon Fresh delivery", "They target rural markets where full-format stores are not economically viable"],
+        ans:1,
+        note:"The small-format expansion is a store location strategy question with brand positioning implications. It tests whether premium grocery can operate in convenience formats - a question that connects to the Fayetteville store's competitive positioning against Sprouts (under construction, smaller format, university-adjacent)." }
+    ],
+    wed:[
+      { q:"What makes the Symbiosis level of the M&A Integration Spectrum fundamentally different from Absorption?",
+        opts:["Symbiosis means the acquirer has no operational input; Absorption means moderate input", "In Symbiosis, integration is selective and the acquired brand retains genuine operational autonomy; in Absorption, operational autonomy is eliminated even if the brand name remains", "Symbiosis describes a 50/50 merger; Absorption describes a full takeover", "Symbiosis is always more profitable than Absorption for the acquiring company"],
+        ans:1,
+        note:"The key word is 'genuine' - Absorption often preserves the brand externally while eliminating autonomy internally. Students should be able to recognize that Whole Foods' current situation is Absorption because the operational independence is gone, even though the name and store identity remain. Open for brief class discussion: did Amazon ever actually achieve Symbiosis with Whole Foods?" },
+      { q:"According to Food & Power's investigation (Source 2), centralized purchasing at Whole Foods primarily disadvantaged which group?",
+        opts:["Large national CPG brands who lost shelf space to 365 private label", "Amazon Prime members who saw prices increase after centralization", "Local and independent food vendors who lost shelf access as buying shifted to Austin HQ and favored larger suppliers", "Whole Foods' top-line revenue, which declined after centralization"],
+        ans:2,
+        note:"Rewards careful reading of Source 2 (the critical source). The insight from former VP Errol Schweizer is particularly useful: centralization actually started before the Amazon acquisition, under investor pressure. Students who read this carefully will arrive with a more nuanced view than 'Amazon ruined Whole Foods.'" },
+      { q:"Using Stakeholder Salience (power, legitimacy, urgency), which stakeholder group gained the most power at Whole Foods after the Amazon acquisition - and which lost the most legitimacy?",
+        opts:["Customers gained power; suppliers lost legitimacy", "Amazon/investors gained power; local suppliers lost legitimacy", "Team members gained urgency; community advocates lost power", "Amazon gained power; customers lost legitimacy"],
+        ans:1,
+        note:"DISCUSSION QUESTION - designed for debate rather than a single correct answer. The keyed answer is the most analytically precise (Amazon/investors gained power, local suppliers lost legitimacy - this maps cleanly to the centralized purchasing story), but the customers/suppliers pairing is also defensible. Ask: what's the difference between a stakeholder losing power vs. losing legitimacy? That distinction is the heart of what Stakeholder Salience teaches." },
+      { q:"In June 2025, Amazon announced that Whole Foods corporate employees would be migrated into Amazon's own pay, benefits, and performance management programs. This decision most clearly represents which M&A integration action?",
+        opts:["A Preservation action - maintaining Whole Foods' separate identity", "A Symbiosis action - sharing capabilities across both companies voluntarily", "An Absorption action - eliminating the last structural separation between the two organizations", "A Transformation action - replacing Whole Foods leadership with Amazon executives"],
+        ans:2,
+        note:"Tests whether students can apply the framework to a specific real-world decision rather than reciting definitions. The 'One Grocery' memo is Source 7. If students are unsure, ask them to consider what Whole Foods employees lost when their HR programs merged into Amazon's. The answer is structural: they lost the last organizational proof that they worked for a different company with different values." },
+      { q:"Whole Foods Fayetteville currently stocks approximately 85 local and regional Arkansas products. From a brand marketing perspective, which argument BEST justifies preserving this local product curation against Amazon's centralized inventory system?",
+        opts:["Local products are more profitable than national brands on a per-unit basis", "Local curation is the primary competitive differentiator against Trader Joe's and Sprouts - the only thing Whole Foods can offer that they cannot match at their price point", "Amazon's centralized system cannot handle products with less than $500K in revenue", "The Fayetteville customer base prefers local products over national organic brands at a 2:1 ratio"],
+        ans:1,
+        note:"Bridges the warm-up to Friday's case by establishing the competitive positioning logic students will need. The correct answer is a marketing argument, not a financial or operational one - which reinforces the course's consistent emphasis on connecting strategy decisions to brand positioning. The keyed answer is itself debatable (Sprouts does carry some local products), and that debate is productive." }
+    ]
+  },
+  { wk:11, act:2, name:"Starbucks",
+    mon:[
+      { q:"Howard Schultz described a Starbucks store as 'a kind of third place' in Starbucks' 1995 Annual Report. What did he mean by 'third place'?",
+        opts:["A third, lesser-known coffee blend Starbucks developed in 1995", "A social environment separate from home (first place) and work (second place) - a community gathering space", "The third location a customer visits in a loyalty rewards program journey", "A store format combining drive-through, cafe, and delivery in one building"],
+        ans:1,
+        note:"Tests careful reading of the primary source language from Sources 4 and 7. The wrong answers are plausible distractors for students who skimmed rather than read. If many students miss this, it signals they didn't open the notebook - use it as a teaching moment before moving on." },
+      { q:"By 2024, approximately what share of Starbucks orders were mobile app or drive-through - formats that eliminate in-store time and barista interaction?",
+        opts:["About 25% - most customers still came in and sat down", "About 40% - a growing minority but not yet dominant", "About 50% - roughly split between in-store and digital/drive-through", "More than 75% - the vast majority of transactions bypassed the coffeehouse experience"],
+        ans:3,
+        fixed:true,
+        note:"The 75%+ figure appears in multiple sources and is the empirical anchor for why the third-place brand eroded. Students who only listened to the audio overview may guess 50%. The correct answer is the data point that makes the strategy collapse concrete rather than impressionistic." },
+      { q:"What is the name of CEO Brian Niccol's turnaround strategy, and what is its central premise?",
+        opts:["'Third Place Revival' - converting all Starbucks to sit-down-only cafe formats", "'Triple Shot Reinvention' - combining digital growth, menu innovation, and sustainability", "'Back to Starbucks' - returning to the community coffeehouse model while maintaining modern convenience", "'Green Apron First' - prioritizing barista training and wages above all other investments"],
+        ans:2,
+        note:"Tests basic name recognition and the strategic premise. 'Triple Shot Reinvention' is the name of Niccol's predecessor's strategy ('Triple Shot Reinvention with Two Pumps') - a purposeful distractor for students who read about the contrast between the two approaches. 'Green Apron First' describes one element of the strategy but overstates it as the singular focus. Good prompt for brief discussion: what does it mean to go 'back'?" },
+      { q:"In Pine and Gilmore's Experiential Retail framework, what are the '4Es' that together create a memorable, high-value customer experience?",
+        opts:["Efficiency, Engagement, Empathy, and Excellence", "Education, Entertainment, Escapist, and Esthetic", "Experience, Emotion, Environment, and Exchange", "Exploration, Expression, Elevation, and Enjoyment"],
+        ans:1,
+        note:"Pure recall of the framework introduced in the prep materials (Source 8). If students miss this, slow down the Segment 3 framework introduction - they haven't seen the vocabulary yet. One distractor sounds corporate-plausible; two sound like framework language. This is the foundational vocabulary question before any application." },
+      { q:"Under CEO Niccol's renovation program, which of the following has Starbucks explicitly restored to its stores as part of recreating the coffeehouse experience?",
+        opts:["Alcohol service and evening bar programming", "Ceramic mugs and in-store glassware for dine-in customers", "Vinyl record listening stations and live acoustic music", "Table service and server-style ordering"],
+        ans:1,
+        note:"Tests engagement with the specific Back to Starbucks operational changes - ceramic mugs are mentioned explicitly in Sources 1 and 4. The wrong answers (alcohol, vinyl, table service) all sound plausible as premium experience upgrades but are not part of the announced strategy. Connects directly to the Atmospherics row in the 4-pillar retail table from Monday Segment 2C." }
+    ],
+    wed:[
+      { q:"Pine and Gilmore describe the most powerful experiential retail moments as hitting a 'sweet spot.' What does the sweet spot require?",
+        opts:["Maximizing one experiential realm - usually Esthetic - at the expense of the others to create a single dominant impression", "Activating all four experiential realms simultaneously so customers are learning, entertained, actively engaged, and aesthetically immersed at once", "Achieving the highest possible Net Promoter Score by combining speed and quality", "Balancing passive and active customer participation equally across the store format"],
+        ans:1,
+        note:"Tests the distinguishing feature of the framework - not just knowing the 4Es but understanding that the sweet spot is all four working simultaneously. The 'maximize one realm' option is the tempting misread (brand purists often argue for depth in one realm). The 'balance passive and active' option is a plausible restatement of the axis logic but not the sweet spot concept. This is the framework question that separates students who read Pine vs. those who read a summary." },
+      { q:"As of late 2025, what is the status of Starbucks' relationship with Workers United, the union representing baristas at 550+ stores?",
+        opts:["Starbucks and Workers United signed a first contract in mid-2025 covering all unionized stores", "Workers United voted to decertify in 2025, ending the four-year organizing campaign", "Starbucks and Workers United are not in active contract negotiations; baristas launched an open-ended strike in November 2025 - four years after the first union win", "Workers United and Starbucks reached a framework agreement in 2025 that resolved all unfair labor practice charges"],
+        ans:2,
+        note:"Tests engagement with Source 6 (CNN union coverage). NOTE: your original note said the most common wrong answer was 'C (framework agreement)' - the framework-agreement option is the fourth one here, not C. That is the distractor to watch: it sounds like a resolution but isn't. The signed-contract option is the happy ending students might assume happened. This question rewards the students who actually read the critical source rather than skimming for positive signals." },
+      { q:"Using the Stakeholder Salience Model, which attribute do critics argue Starbucks has effectively denied to Workers United - preventing baristas from being treated as 'Definitive' stakeholders?",
+        opts:["Power - critics argue baristas have no meaningful ability to disrupt Starbucks operations", "Urgency - critics argue the union's demands are not time-sensitive enough to require immediate attention", "Legitimacy - critics argue Starbucks treats the union's claims as improper or not valid, despite baristas having legal organizing rights and documented ULP violations", "All three - critics argue Starbucks denies Power, Legitimacy, and Urgency equally"],
+        ans:2,
+        fixed:true,
+        note:"DISCUSSION QUESTION - worth 30-60 seconds after the answer reveals. The correct answer is Legitimacy: Workers United clearly has Power (strike capability, brand risk) and Urgency (open-ended strike at peak season), but Starbucks' behavior suggests it does not fully acknowledge the legitimacy of the union's claims - hence treating them as Dangerous (Power + Urgency) rather than Definitive (all three). This is the analytical insight that makes the Stakeholder Salience Model feel like a real tool rather than a classification exercise." },
+      { q:"Of the four experiential realms, which one did Starbucks most directly destroy by removing seating, eliminating outlets, and redesigning stores for mobile-order throughput?",
+        opts:["Education - because baristas stopped teaching customers about coffee origins and brewing", "Entertainment - because in-store music and seasonal launches became less prominent", "Esthetic - because store designs became functional and stripped of warmth", "Escapist - because customers could no longer actively choose to spend time in the space, which is the defining act of the third-place experience"],
+        ans:3,
+        note:"Tests precise 4Es vocabulary application. The Esthetic answer is the most tempting distractor - removing soft seating and warm lighting clearly hurt Esthetic. But the correct answer is Escapist: the Escapist realm is about active participation and immersion (choosing to be somewhere) and Starbucks literally redesigned stores to eliminate that choice. Esthetic can be restored with renovations; Escapist requires that customers actually want to stay, which depends on the whole system working. Worth unpacking the distinction briefly." },
+      { q:"Brian Niccol says the Back to Starbucks strategy succeeds because baristas deliver warmth, personalized connection, and community. Workers United says the strategy 'won't work without us.' Which marketing concept best describes the strategic problem this creates?",
+        opts:["Brand extension failure - Starbucks is trying to extend into a new market segment it doesn't own", "Brand-operations coherence gap - the external brand promise depends on internal stakeholders whose conditions are incompatible with delivering it", "Co-branding conflict - Workers United's brand identity is incompatible with the Starbucks brand", "Demand-side segmentation failure - Starbucks is targeting the wrong customer segment with its community positioning"],
+        ans:1,
+        note:"The synthesis question - worth opening for brief discussion. The correct answer introduces brand-operations coherence: when what a brand promises externally requires internal conditions that currently don't exist, the brand promise is structurally hollow regardless of how compelling the narrative is. This is the Act 2 concept in miniature, and it connects directly to the Friday case. NOTE: your original note flagged 'B (co-branding)' as the plausible-but-wrong option - co-branding is the third option here, not B. The segmentation option introduces a real concept but misapplies it." }
+    ]
+  },
+  { wk:12, act:2, name:"Walmart",
+    mon:[
+      { q:"Walmart describes its core purpose as helping people do which of the following?",
+        opts:["Build wealth and achieve financial freedom", "Save money and live better", "Shop smarter and live greener", "Get more for less, every time"],
+        ans:1,
+        note:"Tests careful reading of Source 1. Use the moment to ask: what does 'live better' actually mean, and who defines it? The slogan bridges neatly to the Service-Profit Chain: living better depends on the service encounter." },
+      { q:"Approximately how many customers visit Walmart stores and websites globally each week?",
+        opts:["90 million", "150 million", "280 million", "400 million"],
+        ans:2,
+        fixed:true,
+        note:"The 280 million figure establishes Walmart's scale and what that scale means for any associate decision. Transition: 280 million people per week - what happens when a company that large makes a decision about scheduling?" },
+      { q:"What is Live Better U?",
+        opts:["Walmart's private-label wellness product line", "A customer loyalty program offering health and financial benefits", "Walmart's education benefit covering 100% of tuition and books for associates", "A community grant program for rural schools near Walmart stores"],
+        ans:2,
+        note:"Students who read Sources 2 and 3 will know this immediately. The answer bridges the brand slogan to a concrete ISQ investment - use it to introduce the Service-Profit Chain: Live Better U is a Stage 01 investment. Does it work if scheduling instability prevents completion?" },
+      { q:"In the Service-Profit Chain, what is 'internal service quality' (ISQ)?",
+        opts:["The score Walmart receives on customer satisfaction surveys", "The quality of Walmart's supply chain and inventory management systems", "The conditions under which frontline associates do their work - including workplace design, training, scheduling, and tools", "The standard of service Walmart requires suppliers to provide"],
+        ans:2,
+        note:"Tests whether students engaged with Sources 8 or 9 before class. The customer-survey option conflates ISQ with ESQ/customer outcomes. The supplier option applies 'internal' to a different supply chain layer. This definitional foundation drives everything else this week." },
+      { q:"Which retail pillar is MOST directly connected to the Service-Profit Chain argument in this week's case?",
+        opts:["Store Location - because Walmart's rural presence creates community dependency", "Merchandise - because EDLP requires supply chain efficiency, not just low wages", "Atmospherics - because store remodels improve the customer experience", "Customer Service - because the frontline service encounter is where the brand promise reaches the customer"],
+        ans:3,
+        note:"All four answers are partially defensible - that's intentional. Push back on the other three: the chain's logic says all retail elements ultimately flow through the encounter. Customer Service is correct because ESQ (the encounter) is Stage 03 - the only moment upstream investments become visible to the customer." }
+    ],
+    wed:[
+      { q:"What makes the Service-Profit Chain different from a simple argument that 'happy workers lead to happy customers'?",
+        opts:["It proves that higher wages always lead to better customer service", "It identifies a specific sequence of causal links - and argues that skipping links or investing downstream first will not work", "It shows that technology investment is the most important driver of customer satisfaction", "It focuses only on the frontline encounter and ignores upstream management decisions"],
+        ans:1,
+        note:"Core conceptual test. The wages and technology options are common misreadings - students who didn't engage deeply may think the chain is just about wages or technology. The frontline-only option is a reversal. The correct answer sets up the binding constraint concept." },
+      { q:"According to external research and advocacy sources, what do Walmart associates most consistently cite as a primary driver of job dissatisfaction and departure?",
+        opts:["Wages that are below the industry median", "Lack of access to the Live Better U education benefit", "Unpredictable scheduling - not knowing their schedule more than a few days in advance", "Insufficient training on technology tools like the MyWalmart app"],
+        ans:2,
+        note:"Students who engaged with Source 5 will find this. Wage levels are a common assumption - push back: Walmart's wages have risen to $18.25 average. The research consistently points to scheduling instability as the binding ISQ constraint. This is the central analytical move of the week." },
+      { q:"Using the Service-Profit Chain, what is the BINDING CONSTRAINT at Walmart - the single upstream link whose failure most directly causes the downstream customer satisfaction gap?",
+        opts:["Stage 04: insufficient investment in brand marketing and customer loyalty programs", "Stage 03: poor store atmospherics and outdated physical infrastructure", "Stage 01: scheduling instability drives turnover, which degrades encounter consistency before customers arrive", "Stage 02: wages that are too low to attract high-quality associates"],
+        ans:2,
+        note:"DISCUSSION QUESTION - open this one up. The low-wages option is the most common wrong answer; it sounds right, but evidence points to scheduling (a Stage 01 input) as the binding constraint, not wages per se. Ask: what does the Live Better U completion data tell us about scheduling and ISQ? The marketing and atmospherics options represent downstream investments that don't address the upstream gap." },
+      { q:"Walmart has been criticized for 'destroying Main Street' - yet is now the primary employer and food access point in many rural communities. In Stakeholder Salience terms, how do rural communities relate to Walmart?",
+        opts:["High power, high legitimacy, high urgency - definitive stakeholder", "Low power, high legitimacy, high urgency - dependent stakeholder with no exit option", "High power, low legitimacy, low urgency - dominant but contested stakeholder", "Moderate power, moderate legitimacy, moderate urgency - expectant stakeholder"],
+        ans:1,
+        note:"Applies the Stakeholder Salience Model to a new context. Rural communities have high legitimacy (their dependence is real and documented) and high urgency (store closures create food deserts immediately) but very low power (no leverage). Connect to Friday: if associates ARE the community, their salience is similarly constrained." },
+      { q:"Walmart's 'people-led, tech-powered' campaign makes a brand promise. The Service-Profit Chain says that promise can only be kept if which condition is met?",
+        opts:["Walmart's advertising spend is sufficient to build brand awareness nationwide", "Technology investments reduce customer wait times at checkout", "The upstream links - ISQ and associate satisfaction - are functioning well enough that the service encounter actually delivers on the promise", "Walmart's prices remain lower than Amazon and Target"],
+        ans:2,
+        note:"Tests integration of chain logic with brand strategy. The advertising option is downstream. The technology option is the Proposal B argument - the chain says it's insufficient alone. The pricing option is EDLP logic, real but orthogonal. The correct answer is the synthesizing insight: campaigns make downstream promises that can only be kept by upstream delivery." }
+    ]
+  },
+  { wk:13, act:2, name:"Quince",
+    mon:[
+      { q:"Quince achieves its low prices primarily by:",
+        opts:["Using cheaper synthetic materials instead of natural fibers", "Eliminating the middlemen (sourcing agents, wholesalers, retail) and shipping directly from factory to consumer", "Manufacturing products in large batches to drive down per-unit costs", "Partnering with fast fashion factories that produce for multiple brands simultaneously"],
+        ans:1,
+        note:"The wrong answers are plausible - large-batch manufacturing and shared fast-fashion factories are how conventional mass-market retail reduces costs; cheaper synthetics are how fast fashion does it. The correct answer is specific to Quince's MTC model. Students who didn't do the reading often pick the large-batch option." },
+      { q:"Quince's bestselling Mongolian cashmere crewneck sweater is priced at approximately:",
+        opts:["$120", "$80", "$50", "$30"],
+        ans:2,
+        fixed:true,
+        note:"Tests specific product knowledge. $50 is consistently cited across all sources and is the anchor price point of Quince's value proposition. Students who recall $50 from the notebook have engaged with the material." },
+      { q:"According to Quince's own website, the company's vision is described as 'Sustainability, Accountability, Transparency, and:'",
+        opts:["Affordability", "Amazing Value", "Innovation", "Community"],
+        ans:1,
+        note:"Tests careful reading of Source 1 (the About Us page). 'A Vision For Sustainability, Accountability, Transparency & Amazing Value' is verbatim. Worth opening for brief class discussion: does 'amazing value' belong alongside sustainability, accountability, and transparency as a vision statement?" },
+      { q:"On the IP and Design Ethics Spectrum introduced this week, which of the following practices is LEGAL in the U.S. but ethically contested?",
+        opts:["Selling counterfeits of a brand's products using their logo", "Creating original designs inspired by historical fashion traditions", "Closely copying another brand's silhouette and color without using a trademarked logo", "Filing a patent on a new fabric technology"],
+        ans:2,
+        note:"The key distinction is between legally protected IP (trademarks, patents, distinctive non-functional design elements) and unprotected elements (silhouettes, cuts, color combinations). The correct answer describes Quince's alleged practice. Worth discussing: why is fashion IP law so weak compared to other creative industries?" },
+      { q:"Everlane, the DTC brand that preceded Quince with a 'radical transparency' promise, ultimately faced criticism because:",
+        opts:["Its prices were too high for most consumers", "It used synthetic materials it had claimed were natural", "It made transparency claims it couldn't substantiate, and faced union-busting allegations despite an ethical brand image", "It was acquired by a fast fashion conglomerate"],
+        ans:2,
+        note:"Tests engagement with Source 7 (Everlane critical analysis). The Everlane story is a direct precedent for Quince - ambitious transparency claims without the verification infrastructure to back them up. The union-busting detail (customer service staff layoffs framed as COVID cuts) is the specific incident that triggered the backlash." }
+    ],
+    wed:[
+      { q:"What is the critical distinction between 'transparency' and 'accountability' in the context of supply chain ethics?",
+        opts:["Transparency means sharing data; accountability means being legally liable", "Transparency means disclosing some information; accountability means providing verifiable evidence that claims are true", "Transparency is a marketing concept; accountability is a legal concept", "There is no meaningful distinction - they are synonyms in supply chain management"],
+        ans:1,
+        note:"Core definitional question for the framework. The key: transparency is selective and self-reported; accountability requires third-party verification that disclosed information is accurate. Quince does the former but not the latter. Students who went back to the notebook with Wednesday prep question W-Q1 will have specific evidence from Source 5." },
+      { q:"When Ecocult journalists asked Quince for specific factory names and audit information, Quince responded that sharing this would:",
+        opts:["Violate their factory partners' privacy agreements", "Conflict with their BSCI certification requirements", "Divulge competitive advantages", "Create confusion given the complexity of the supply chain"],
+        ans:2,
+        note:"Directly from Source 5 (Ecocult investigation). This specific answer is strategically important: it reveals that Quince frames supply chain transparency as a competitive disadvantage. Worth asking students: if transparency is a core value, why is it also a competitive advantage to withhold? This surfaces the tension between brand claims and business model." },
+      { q:"According to independent sustainability evaluators, Quince scored zero points out of 14 possible in which category on Eco-Stylist's assessment?",
+        opts:["Environmental impact", "Animal welfare", "Supply chain transparency", "Use of sustainable materials"],
+        ans:2,
+        note:"From Source 6 (Eco-Stylist evaluation). The zero on supply chain transparency is the sharpest single finding - given that Quince brands itself around transparency. Worth opening for discussion: Quince uses the word transparency constantly, so how did it score zero on transparency? This is NOT a rhetorical trick - independent evaluators defined transparency as factory-level disclosure, and Quince doesn't meet that threshold." },
+      { q:"On the IP and Design Ethics Spectrum, 'close copy' refers to which of the following?",
+        opts:["Copying a brand's logo and selling it as the original", "Designing an original garment inspired by historical fashion archives", "Copying a design's silhouette, proportions, and details closely, without using trademarked brand elements - legally permissible in the U.S. but ethically contested", "Licensing another brand's design for a lower price point"],
+        ans:2,
+        note:"Definitional question on the spectrum's third level. Important nuance: close copy is NOT counterfeiting (which involves trademarks) and is NOT clearly inspiration (which involves distinct creative transformation). The 'legally permissible but ethically contested' framing is the key phrase students need for exam applications." },
+      { q:"Brands like White + Warren have responded to Quince by investing in products that are 'dupe-proof' - meaning they feature unique design elements that cannot be easily copied. This represents which of the following strategic responses?",
+        opts:["Price competition to match Quince's lower price point", "Brand identity deepening as a differentiation strategy", "Legal action to enforce IP rights", "Abandoning the premium basics market segment"],
+        ans:1,
+        note:"Connects IP ethics to competitive marketing strategy. From Source 4 (Business of Fashion). The 'dupe-proof' playbook - sardine-embroidered sweaters, unique materials, brand world investment - is a strategic response to the IP gap in fashion law. Brands that cannot rely on legal protection must compete on identity. Ask: what does this tell us about where Quince is actually vulnerable?" }
+    ]
+  },
+  { wk:14, act:2, name:"Shein",
+    mon:[
+      { q:"What does Shein's LATR system stand for, and what is its primary strategic purpose?",
+        opts:["'Lean and Trackable Retail' - reducing physical store overhead", "'Large-Scale Automated Test and Reorder' - testing micro-batches and scaling demand-confirmed hits", "'Low-cost Algorithm for Trend Research' - identifying fashion trends from social media only", "'Logistics and Tracking for Retail' - managing global shipping infrastructure"],
+        ans:1,
+        note:"Most important factual question of the week. Students who get this right engaged with Sources 2 or 11. The wrong answers conflate the algorithm (trend detection) with the full system (test-and-reorder cycle). Open for class discussion: why does the LATR model require a large, exclusive factory network to work? This sets up the flywheel-to-externalization link that is Monday's core analytical move." },
+      { q:"According to Public Eye's 2024 follow-up investigation, what did workers in Shein's Guangzhou supplier factories typically work?",
+        opts:["40 hours per week - standard Chinese legal limit", "55 hours per week - slightly above legal limit", "75 hours per week - in violation of Chinese law and Shein's own supplier code of conduct", "90 hours per week - as alleged in the Channel 4 documentary"],
+        ans:2,
+        fixed:true,
+        note:"75 hours violates both Chinese labor law AND Shein's own code of conduct (which allows a maximum of 60 hours). The 90-hour option reflects Channel 4's allegation - the audit-confirmed figure is lower but still illegal. Worth noting: Shein's audits omitted working hours from scope, which is itself a teaching moment about accountability design." },
+      { q:"According to Shein's own 2023 sustainability report data, how much CO2 did Shein emit that year?",
+        opts:["1.2 million metric tons - comparable to a mid-sized airline", "5.6 million metric tons - comparable to a large coal plant", "16.7 million metric tons - more than four coal power plants", "42 million metric tons - comparable to a small country"],
+        ans:2,
+        fixed:true,
+        note:"This figure comes from Shein's own sustainability report - students who notice this are engaging analytically with Source 10. The 9.7% increase from 2023 to 2024 is useful additional context: emissions are rising despite pledges." },
+      { q:"According to the Externalized Costs Analysis framework, what is an 'externalized cost'?",
+        opts:["A cost that a company hides in its financial accounting to avoid taxes", "A cost that appears higher than it should due to inefficient supply chain management", "A real cost transferred to parties who did not agree to bear it - workers, communities, ecosystems, or future generations", "A cost that is external to the core product but passed to customers through pricing"],
+        ans:2,
+        note:"The phrase 'did not agree to bear it' is the moral and analytical weight-bearer. Common confusion: externalized costs (borne by others) vs. hidden costs (borne by the company but not disclosed). Worth clarifying the distinction." },
+      { q:"Approximately how many new SKUs does Shein add to its platform each day?",
+        opts:["100-200 items - micro-batch testing volume", "500-1,000 items", "2,000-10,000 items", "50,000+ items - Shein's total live catalog"],
+        ans:2,
+        fixed:true,
+        note:"Contrast with Zara (~12,000 new items per year) - Shein adds more per day than Zara adds in a year. Useful for the positioning map discussion and for the LATR model explanation: high daily SKU volume is the output of the micro-batch test system, not a merchandising strategy in the traditional sense." }
+    ],
+    wed:[
+      { q:"When Shein's factory workers earn approximately $330/month in base wages while working 75-hour weeks, which category of externalized cost does this represent?",
+        opts:["Environmental externalized cost - labor affects ecosystem health", "Community externalized cost - wages affect local economies", "Labor externalized cost - workers bear the cost of Shein's low prices through wages and time", "Consumer health externalized cost - workers' health is at risk from factory conditions"],
+        ans:2,
+        note:"Tests whether students understand labor exploitation as cost transfer rather than only unethical behavior. Worth asking: if Shein had to pay living wages with legal hours, how much would that dress cost? This connects the framework directly to the pricing analysis from Monday." },
+      { q:"Public Eye's 2024 investigation found that Shein's supplier audits had a significant methodological gap. What was it?",
+        opts:["Audits were conducted by Shein employees rather than independent third parties", "Audits only measured monthly pay levels - not working hours", "Audits surveyed managers rather than factory workers", "Audits were announced in advance, allowing factories to temporarily improve conditions"],
+        ans:1,
+        note:"Precision question that rewards careful engagement with Source 3. The analytical importance: accountability infrastructure can be designed to avoid measuring the things that would reveal non-compliance - which is different from failed compliance. This is the accountability theater vs. genuine accountability distinction that the course's closing argument rests on." },
+      { q:"Which strategy shock poses the most direct structural threat to Shein's business model - not just its reputation?",
+        opts:["Growing consumer awareness of Shein's labor violations", "The revocation of the U.S. de minimis exemption for Chinese imports", "Intellectual property lawsuits from independent designers", "The Channel 4 documentary and subsequent media coverage"],
+        ans:1,
+        note:"DISCUSSION QUESTION - designed for debate. The de minimis answer is strongest because it directly attacks the pricing mechanism enabling externalization to remain invisible - a structural threat, not reputational. The consumer awareness option is defensible. Award the keyed answer but open the class debate: can reputational pressure close the values-action gap, or does it require structural intervention? Feeds directly into Friday's case." },
+      { q:"The Values-Action Gap framework, as taught this week, refers to:",
+        opts:["The gap between a company's stated values and its actual business practices", "The gap between consumers' stated ethical preferences and their actual purchase behavior", "The gap between the value a product provides and the price a consumer pays", "The gap between investor expectations for ESG performance and actual company results"],
+        ans:1,
+        note:"The corporate-version option describes the phenomenon Shein exemplifies - but the framework as taught is the demand-side, consumer-behavioral version. Worth noting: Patagonia's Week 2 analysis touched on a corporate version; Shein week turns it toward consumer behavior. Both phenomena are real and pedagogically distinct." },
+      { q:"Shein's average SKU price of $14 compares to H&M at $26 and Zara at $34. Which of the following best explains how Shein sustains this price advantage?",
+        opts:["Shein uses recycled materials, reducing input costs", "Shein operates no physical stores, eliminating retail overhead entirely", "Shein's LATR data flywheel eliminates inventory risk while factory exclusivity transfers time pressure - and its costs - to workers", "Shein has lower marketing costs because it relies exclusively on organic social media"],
+        ans:2,
+        note:"The no-physical-stores option is partly true but incomplete - many online-only retailers cannot match Shein's price. The organic-social option is false; Shein spends heavily on its affiliate/micro-influencer program. The correct answer integrates the LATR model with the externalization argument - the analytical synthesis Monday built toward. This question rewards students who connected the flywheel discussion to the Externalized Costs framework." }
+    ]
+  }
+];
+
+/* ============================================================ */
+
+let cur = null;
+let idx = 0;
+let shown = false;
+
+function buildMenu(){
+  [1,2].forEach(function(act){
+    var host = document.getElementById("act"+act);
+    host.innerHTML = "";
+    WEEKS.filter(function(w){return w.act===act;}).forEach(function(w){
+      var row = document.createElement("div");
+      row.className = "wk";
+      row.innerHTML =
+        '<span class="wk-num">Week '+w.wk+'</span>'+
+        '<span class="wk-name">'+w.name+'</span>';
+      var btns = document.createElement("div");
+      btns.className = "wk-btns";
+      [["Monday","mon"],["Wednesday","wed"]].forEach(function(pair){
+        var b = document.createElement("button");
+        b.className = "daybtn";
+        b.textContent = pair[0];
+        if(!w[pair[1]].length){ b.disabled = true; }
+        else { b.onclick = function(){ start(w, pair[0], w[pair[1]]); }; }
+        btns.appendChild(b);
+      });
+      row.appendChild(btns);
+      host.appendChild(row);
+    });
+  });
+}
+
+/* Shuffle option order fresh each time a set is opened, so no answer-position
+   pattern survives across the three sections. Questions flagged fixed:true keep
+   their source order (ascending magnitudes, "all three" options, etc.).
+   Prep view always reads the unshuffled source order. */
+function shuffleSet(qs){
+  return qs.map(function(item){
+    if(item.fixed){
+      return { q:item.q, opts:item.opts.slice(), ans:item.ans };
+    }
+    var order = item.opts.map(function(_, i){ return i; });
+    for(var i = order.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = order[i]; order[i] = order[j]; order[j] = t;
+    }
+    return {
+      q: item.q,
+      opts: order.map(function(k){ return item.opts[k]; }),
+      ans: order.indexOf(item.ans)
+    };
+  });
+}
+
+function start(week, dayLabel, qs){
+  cur = { week:week, dayLabel:dayLabel, qs:shuffleSet(qs) };
+  idx = 0; shown = false;
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("quiz").classList.add("on");
+  render();
+}
+
+function goMenu(){
+  cur = null;
+  document.getElementById("quiz").classList.remove("on");
+  document.getElementById("menu").style.display = "flex";
+}
+
+function render(){
+  var stage = document.getElementById("qStage");
+  var foot  = document.getElementById("qFoot");
+
+  document.getElementById("qWho").textContent =
+    "Week "+cur.week.wk+" \u00b7 "+cur.week.name+" \u00b7 "+cur.dayLabel;
+
+  if(idx >= cur.qs.length){
+    document.getElementById("qPips").innerHTML = "";
+    foot.style.display = "none";
+    stage.outerHTML =
+      '<div class="end" id="qStage">'+
+        '<h2>That&rsquo;s the warm-up.</h2>'+
+        '<p>Let&rsquo;s get into it.</p>'+
+        '<button class="again" onclick="goMenu()">Back to the semester</button>'+
+      '</div>';
+    return;
+  }
+
+  foot.style.display = "flex";
+  var item = cur.qs[idx];
+
+  document.getElementById("qPips").innerHTML = cur.qs.map(function(_,i){
+    return '<span class="pip '+(i<idx?"done":(i===idx?"now":""))+'"></span>';
+  }).join("");
+
+  var opts = item.opts.map(function(t,i){
+    return '<div class="opt'+(i===item.ans?" right":"")+'">'+
+      '<div class="num">'+(i+1)+'</div>'+
+      '<div class="txt">'+t+'</div>'+
+      '<div class="tick">&#10003;</div>'+
+    '</div>';
+  }).join("");
+
+  stage.outerHTML =
+    '<div class="q-body'+(shown?" revealed":"")+'" id="qStage">'+
+      '<div class="eyebrow">Question '+(idx+1)+' of '+cur.qs.length+'</div>'+
+      '<div class="q-text">'+item.q+'</div>'+
+      '<div class="opts">'+opts+'</div>'+
+      (CUE_TEXT ? '<div class="cue">'+CUE_TEXT+'</div>' : '')+
+    '</div>';
+
+  document.getElementById("btnMain").textContent =
+    shown ? (idx === cur.qs.length-1 ? "Finish" : "Next question") : "Show answer";
+}
+
+function advance(){
+  if(!cur) return;
+  if(!shown){ shown = true; } else { idx++; shown = false; }
+  render();
+}
+
+function prev(){
+  if(!cur) return;
+  if(shown){ shown = false; render(); }
+  else if(idx > 0){ idx--; shown = true; render(); }
+  else { goMenu(); }
+}
+
+
+/* ---------- prep view (instructor only, never shown in class) ---------- */
+var prepFilter = "all";
+
+function loadedSets(){
+  var out = [];
+  WEEKS.forEach(function(w){
+    if(w.mon.length) out.push({w:w, day:"Monday",    qs:w.mon});
+    if(w.wed.length) out.push({w:w, day:"Wednesday", qs:w.wed});
+  });
+  return out;
+}
+
+function showPrep(){
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("quiz").classList.remove("on");
+  document.getElementById("prep").classList.add("on");
+  buildPrep();
+}
+
+function hidePrep(){
+  document.getElementById("prep").classList.remove("on");
+  document.getElementById("menu").style.display = "flex";
+}
+
+function setPrepFilter(v){ prepFilter = v; buildPrep(); }
+
+function buildPrep(){
+  var sets = loadedSets();
+
+  var chips = ['<button class="chip'+(prepFilter==="all"?" on":"")+'" onclick="setPrepFilter(\'all\')">All weeks</button>'];
+  var seen = {};
+  sets.forEach(function(s){
+    if(seen[s.w.wk]) return;
+    seen[s.w.wk] = true;
+    chips.push('<button class="chip'+(prepFilter===String(s.w.wk)?" on":"")+
+      '" onclick="setPrepFilter(\''+s.w.wk+'\')">Wk '+s.w.wk+' &middot; '+s.w.name+'</button>');
+  });
+  document.getElementById("prepChips").innerHTML = chips.join("");
+
+  var show = sets.filter(function(s){ return prepFilter==="all" || String(s.w.wk)===prepFilter; });
+
+  if(!show.length){
+    document.getElementById("prepBody").innerHTML =
+      '<div class="prep-empty">No questions loaded yet.</div>';
+    return;
+  }
+
+  document.getElementById("prepBody").innerHTML = show.map(function(s){
+    var qs = s.qs.map(function(item,i){
+      var lis = item.opts.map(function(t,j){
+        return '<li'+(j===item.ans?' class="key"':'')+'>'+t+'</li>';
+      }).join("");
+      return '<div class="pq">'+
+        '<div class="pqn">Question '+(i+1)+'</div>'+
+        '<div class="pqt">'+item.q+'</div>'+
+        '<ol>'+lis+'</ol>'+
+        (item.note ? '<div class="pnote"><b>Instructor note</b>'+item.note+'</div>' : '')+
+      '</div>';
+    }).join("");
+    return '<div class="prep-set">'+
+      '<h3>Week '+s.w.wk+' &middot; '+s.w.name+' &middot; '+s.day+'</h3>'+qs+
+    '</div>';
+  }).join("");
+}
+
+document.addEventListener("keydown", function(e){
+  if(document.getElementById("prep").classList.contains("on")){
+    if(e.key==="Escape") hidePrep();
+    return;
+  }
+  if(!cur){
+    if(e.key==="P"||e.key==="p"){ if(e.shiftKey) showPrep(); }
+    return;
+  }
+  if(e.key===" "||e.key==="Enter"||e.key==="ArrowRight"||e.key==="PageDown"){ e.preventDefault(); advance(); }
+  else if(e.key==="ArrowLeft"||e.key==="PageUp"){ e.preventDefault(); prev(); }
+  else if(e.key==="Escape"){ goMenu(); }
+});
+
+buildMenu();
+</script>
+</body>
+</html>
