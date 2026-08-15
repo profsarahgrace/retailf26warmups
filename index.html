@@ -221,6 +221,8 @@
     <button class="preplink" onclick="showPrep()">Prep view</button>
   </div>
   <div class="menu-body">
+    <div class="act-label" id="act0Label" style="display:none">Foundations</div>
+    <div id="act0"></div>
     <div class="act-label">Act 1 &mdash; When Purpose Works</div>
     <div id="act1"></div>
     <div class="act-label">Act 2 &mdash; When Purpose Gets Complicated</div>
@@ -280,6 +282,31 @@
 const CUE_TEXT = "Lock in your answer";
 
 const WEEKS = [
+  { wk:1, act:0, name:"Foundations \u2014 HBR Reading",
+    mon:[],
+    wed:[
+      { q:"According to \"Put Purpose at the Core of Your Strategy\" (Malnight, Buche & Dhanaraj), purpose most powerfully serves a company's strategy when it:",
+        opts:["Functions as a values statement that unifies culture, separate from business results", "Is treated as an add-on used mainly for social good and employee morale", "Sits at the core of strategy, directly shaping decisions, capabilities, and growth - not treated as a peripheral extra", "Replaces the need for a competitive strategy altogether"],
+        ans:2,
+        note:"Opener. This is the article's central move: purpose is usually talked about as an add-on (culture, morale, giving back), and the authors argue the highest-growth companies instead put it at the core. Good place to ask before revealing: 'Where have you seen a company's stated purpose feel like decoration rather than strategy?'" },
+      { q:"Mars Petcare could have stayed focused on pet food, its original category. Instead, its purpose - \"a better world for pets\" - guided it to expand into:",
+        opts:["Competing pet-food brands, to grow share within its existing category", "Veterinary hospitals, pet insurance-adjacent services, and eventually pet-health technology - a broader ecosystem beyond pet food", "New retail store formats for selling pet food directly to consumers", "A packaging redesign focused on premium shelf appeal"],
+        ans:1,
+        note:"Tests the Mars Petcare example specifically. This is the article's clearest illustration of 'redefining the playing field' - purpose didn't just inspire a campaign, it pointed the company toward acquisitions (Banfield, BluePearl, VCA, AniCura) that took it out of its original category entirely. Contrast with Purina, which kept the same purpose language but stayed in pet food." },
+      { q:"Neste, a Finnish oil-refining company for over six decades, used its purpose to move into an entirely new business: renewable fuels. What made this the moment for that shift, according to the article?",
+        opts:["A government mandate ordering the company to abandon oil refining", "A glutted, declining oil market and new EU emissions legislation that made the traditional playing field unsustainable", "A merger with an existing renewable-energy company", "Customer surveys showing no remaining demand for oil products"],
+        ans:1,
+        note:"Neste's shift wasn't proactive idealism - it came out of real pressure: falling margins, a 50% drop in market value, new regulation. Worth surfacing: purpose here functioned as a strategic response to a business in trouble, not just a mission statement written in good times. That framing matters for how students should read every retailer case this semester." },
+      { q:"Beyond redefining the playing field, the article describes a second role purpose plays: reshaping the value proposition. Companies do this in three main ways - responding to trends, building on trust, and:",
+        opts:["Cutting prices to undercut competitors on value", "Focusing on unmet customer pain points", "Rebranding with new visual identity and messaging", "Outsourcing production to lower costs"],
+        ans:1,
+        note:"Direct recall of the article's three mechanisms. Securitas responded to trends (shifting risk landscape), Mahindra Finance built on trust (extending into insurance and housing once it earned rural customers' confidence), and Mars Petcare's Whistle acquisition focused on a pain point (preventing pet health problems before they happen). Naming these three now gives students vocabulary they'll reuse all semester." },
+      { q:"The article's diagnostic asks whether purpose: (1) drives growth and profitability today, (2) shapes strategic and investment decisions, (3) shapes the core value proposition, (4) shapes how organizational capabilities are built and managed, and (5) is a standing item on the leadership team's agenda every time it meets. A company can only claim purpose is truly at the CORE of its strategy if it can answer yes to:",
+        opts:["All five - growth and profitability today, investment decisions, the value proposition, organizational capabilities, and the leadership agenda every meeting", "Three of the five - the value proposition, the leadership agenda, and growth and profitability today are enough on their own", "Two of the five - shaping the value proposition and appearing on the leadership agenda are the two that matter most", "None specifically - the article treats any one of the five, pursued consistently over time, as sufficient"],
+        ans:0,
+        note:"DISCUSSION QUESTION - worth opening up rather than moving past quickly. The standard is deliberately strict: 'NOT UNLESS you answer yes to all five.' The three wrong answers are built to feel reasonable - each keeps the two items easiest to fake (value proposition language, a leadership-meeting mention) while dropping the three that actually cost money and effort (investment, capabilities, current profitability). That's worth naming directly: those three are exactly the questions a company that's only talking about purpose, rather than committing to it, would fail. Good follow-up once revealed: 'Which of the five would be hardest for most companies to honestly answer yes to?' This previews the whole semester - almost every retailer we study will pass some of these five and fail others, and figuring out which is failing is most of the analytical work ahead." }
+    ]
+  },
   { wk:2, act:1, name:"Patagonia",
     mon:[
       { q:"Patagonia transferred ownership in 2022. Who now holds decision-making authority over the company?",
@@ -737,7 +764,9 @@ let idx = 0;
 let shown = false;
 
 function buildMenu(){
-  [1,2].forEach(function(act){
+  var haveFoundations = WEEKS.some(function(w){ return w.act===0 && (w.mon.length||w.wed.length); });
+  document.getElementById("act0Label").style.display = haveFoundations ? "" : "none";
+  [0,1,2].forEach(function(act){
     var host = document.getElementById("act"+act);
     host.innerHTML = "";
     WEEKS.filter(function(w){return w.act===act;}).forEach(function(w){
